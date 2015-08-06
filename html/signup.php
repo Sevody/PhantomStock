@@ -69,7 +69,7 @@
                             mysql_real_escape_string(strtolower($_POST["email"])));
            
             $result = mysql_query($sql);
-            print_r($result);
+            //print_r($result);
             if ($result !== false)
             {
                 //注册成功
@@ -87,7 +87,8 @@
                 $path = rtrim(dirname($_SERVER["PHP_SELF"]), "/\\");
                 header("Location: https://$host$path/index.php");
                 exit;
-            }else
+            }
+            else
             {
                 echo "添加用户失败";
             }
