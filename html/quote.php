@@ -6,7 +6,7 @@
     http://www.google.com/finance/info?q=CURRENCY:GBPUSD
     http://finance.google.com/finance/info?client=ig&q=AAPL,YHOO
     https://www.google.com/finance/getchart?q=YELP
-    
+    http://www.google.com/finance/info?infotype=infoquoteall&q=C,JPM,AIG
     <--Google finance to get quote-->
     //Obtain Quote Info
     $quote = file_get_contents('http://finance.google.com/finance/info?client=ig&q=MSFT');
@@ -90,7 +90,7 @@
     $data = substr($json, 4, strlen($json) -5);
 
     //decode JSON data
-    $json_output = json_decode(utf8_decode($data));
+    $json_output = json_decode(utf8_encode($data));
 
     // get the last price
     $last_trade = $json_output->l;
@@ -102,7 +102,7 @@
 
 <!DOCTYPE html>
 
-<!DOCTYPE html>
+
 <html>
     <head>
         <title>quote</title>
