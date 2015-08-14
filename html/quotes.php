@@ -1,7 +1,7 @@
 <?
 
     //通过google finance 获取报价
-    include('quotes_from_google.php');
+    include('quotes_source.php');
     
     if(isset($_GET["symbol_list"]))
     {
