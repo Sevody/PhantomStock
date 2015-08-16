@@ -32,6 +32,7 @@
     //把M,B单位转换成万,亿 用于volume
     function transformUnit_toChs($str_num)
     {
+        if($str_num === "-") return $str_num;
         $unit = substr($str_num, -1);
         switch ($unit)
         {
@@ -43,7 +44,7 @@
         }
     }
     
-    //为chg正数前面添加"+",负数则返回原字符串
+    //为正数前面添加"+",负数则返回原字符串
     function plusPlus($str_num)
     {
         $str_num = number_format($str_num, 2);
@@ -60,7 +61,7 @@
     //通过总手和流通股本计算换手率turnover
     function getTurnover($str_volume, $str_shares)
     {   
-        if($str_volume != null && $str_shares != null)
+        if($str_volume != null && $str_shares != null && $str_volume != "-")
         {
             $volume = transformUnit_toInt1($str_volume);
             $shares = transformUnit_toInt2($str_shares);
@@ -68,6 +69,7 @@
             $turn_over = number_format(($volume*100/$shares)*100, 2);
             return $turn_over."%";
         }
+        else return "-";
     }
     
     //根据股票代码从数据库空获取股票名称symbol
@@ -131,4 +133,64 @@
         return floatval($price)-floatval($change);
     }
 
+    //添加.SS,.SZ后缀for Yahoo Finance
+    function appendSuffix($symbol)
+    {
+        $reg = '/(\d)(\d{5})/';
+        $result = preg_match($reg, $symbol, $array);
+        if($result !== 0 && stripos($symbol, ".SS") === false && stripos($symbol, ".SZ") === false)
+        {
+            
+            if($symbol === "000001" || $array[1] === "6" || $array[1] === "9")
+            {
+                return $symbol.".SS";
+            }
+            elseif($array[1] === "0" || $array[1] === "2" || $array[1] === "3") 
+            {
+                return $symbol.".SZ";
+            }
+            else
+            {
+                return $symbol;
+            }
+        
+            
+        }
+        else
+        {
+            return $symbol;
+        }
+    
+    }
+    
+    //添加SHA:,SHE:前缀for Google Finance
+    function appendPrefix($symbol)
+    {
+        $reg = '/(\d)(\d{5})/';
+        $result = preg_match($reg, $symbol, $array);
+        if($result !== 0 && stripos($symbol, ".SS") === false && stripos($symbol, ".SZ") === false)
+        {
+            
+            if($symbol === "000001" || $array[1] === "6" || $array[1] === "9")
+            {
+                return "SHA:".$symbol;
+            }
+            elseif($array[1] === "0" || $array[1] === "2" || $array[1] === "3") 
+            {
+                return "SHE:".$symbol;
+            }
+            else
+            {
+                return $symbol;
+            }
+        
+            
+        }
+        else
+        {
+            return $symbol;
+        }
+    }
+    
+    
 ?>

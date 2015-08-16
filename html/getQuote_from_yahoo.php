@@ -2,35 +2,15 @@
 
     include('helper.php');
     
+    
+    
     function quoteList($symbol_list, $list_quote = true)
     {
         //单个symbol查询
         if($list_quote === false)
         {
-            $reg = '/(\d)(\d{5})/';
-            $result = preg_match($reg, $symbol_list, $array);
-            if($result !== 0 && stripos($symbol_list, ".SS") === false && stripos($symbol_list, ".SZ") === false)
-            {
-                //添加SS,SZ后缀
-                if($array[1] === "6" || $array[1] === "9")
-                {
-                    $str_symbol = $symbol_list."SS";
-                }
-                elseif($array[1] === "0" || $array[1] === "2" || $array[1] === "3") 
-                {
-                    $str_symbol = $symbol_list."SZ";
-                }
-                else
-                {
-                    $str_symbol = $symbol_list;
-                }
-            
-                
-            }
-            else
-            {
-                $str_symbol = $symbol_list;
-            }
+            //添加.SS,.SZ后缀
+            $str_symbol = appendSuffix($symbol_list);
         }
         //复数symbol查询
         else
@@ -42,6 +22,8 @@
             //构造查询String
             foreach($client_json->symbolArray as $symbol)
             {
+                //添加.SS,.SZ后缀
+                $symbol = appendSuffix($symbol);
                 $s .= $symbol.","; 
             }
             

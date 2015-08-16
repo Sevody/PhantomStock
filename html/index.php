@@ -14,10 +14,11 @@
     
     
     
-    $stock_symbols = '{ "symbolArray":["fb", "aapl","600018.SS", "000725.SZ", "002068.SZ", "000002.SZ"] }';
-    
+    $stock_symbols = '{ "symbolArray":["FB", "AAPL","600018", "000725", "002068", "000002"] }';
+    $index_symbols = '{ "symbolArray":["000001","399001"] }';
     //获取股票列表的最新报价
-    $stockList = quoteList($stock_symbols, true);
+    $stockList = quoteList($stock_symbols);
+    $composite_index = quoteList($index_symbols);
     
     
     
@@ -44,6 +45,9 @@
                 width:300px;
                 position:relative;
                 left:25px;
+            }
+            .composite-index{
+                float:right;
             }
             .stocks-board{
                 width:1000px;
@@ -146,7 +150,7 @@
             }  
             */
             
-            var stock_symbols = '{ "symbolArray":["fb", "aapl","600018.SS", "000725.SZ", "002068.SZ", "000002.SZ"] }';
+            var stock_symbols = '{ "symbolArray":["000001","399001","fb", "aapl","600018", "000725", "002068", "000002"] }';
             //每5秒发送一次ajax请求,取回最新报价
             var int=setInterval(refreshQuotes, 5000);
             var xmlhttp;
@@ -168,7 +172,7 @@
                     
                 }
             }
-            
+            //更新报价
             function state_Change()
                 {
                     if (xmlhttp.readyState==4 && xmlhttp.status==200)
@@ -191,6 +195,9 @@
                             document.getElementById(last_trade_id).innerHTML=json_quotes[i]["last_trade"];
                             document.getElementById(chg_id).innerHTML=json_quotes[i]["chg"];
                             document.getElementById(change_id).innerHTML=json_quotes[i]["change"];
+                            //跳过上证和深证指数的其他项
+                            if(json_quotes[i]["symbol"] === "000001" || json_quotes[i]["symbol"] === "399001")
+                                continue;
                             document.getElementById(volume_id).innerHTML=json_quotes[i]["volume"];
                             document.getElementById(turnover_id).innerHTML=json_quotes[i]["turnover"];
                             document.getElementById(open_id).innerHTML=json_quotes[i]["open"];
@@ -214,6 +221,20 @@
                     <input type="text" name="symbol"/>
                     <input type="submit" value="Submit"/>
                 </form>
+            </div>
+            <div class="composite-index">
+                <div class="SHA">
+                    <span class="index">上证指数</span>
+                    <span id="000001-last_trade"><?= $composite_index[0]["last_trade"] ?></span>
+                    <span id="000001-change"><?= $composite_index[0]["change"] ?></span>
+                    <span id="000001-chg"><?= $composite_index[0]["chg"] ?></span>
+                </div>
+                <div class="SHE">
+                    <span id="index">深证指数</span>
+                    <span id="399001-last_trade"><?= $composite_index[1]["last_trade"] ?></span>
+                    <span id="399001-change"><?= $composite_index[1]["change"] ?></span>
+                    <span id="399001-chg"><?= $composite_index[1]["chg"] ?></span>
+                </div>
             </div>
             <div class="stocks-board">
                 <table class="stocks-table">

@@ -9,7 +9,17 @@
     http://www.google.com/finance/info?q=CURRENCY:GBPUSD
     http://finance.google.com/finance/info?client=ig&q=AAPL,YHOO
     https://www.google.com/finance/getchart?q=YELP
+    http://www.google.com/finance/getchart?q=AAPL&p=12H&i=240
+    https://www.google.com/finance/chart?tlf=12&q=aapl
+    http://www.google.com/finance/historical?q=CSCO&output=csv
     http://www.google.com/finance/info?infotype=infoquoteall&q=C,JPM,AIG
+    http://www.google.com/finance/getprices?q=000001&x=SHA&i=86400&p=6M&f=d,c,v,o,h,l&df=cpct&auto=1&ts=1259212443409
+    
+    for ticker related news:
+    http://www.google.com/finance/company_news?q=AAPL&output=rss
+    financial: http://www.google.com/finance?q=CSCO&fstype=ii#
+    related company: http://www.google.com/finance/related?q=csco#
+
     <--Google finance to get quote-->
     //Obtain Quote Info
     $quote = file_get_contents('http://finance.google.com/finance/info?client=ig&q=MSFT');
@@ -78,7 +88,7 @@
     print"</pre>";
     *****************************************************************/
     
-    //include('quotes_from_google.php');
-    include('quotes_from_yahoo.php');
+    include('getQuote_from_google.php');
+    //include('getQuote_from_yahoo.php');
 
 ?>

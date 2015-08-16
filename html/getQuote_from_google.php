@@ -6,7 +6,8 @@
         //单个symbol查询
         if($list_quote === false)
         {
-            $str_symbol = $symbol_list;
+            //添加SHA:,SHE:前缀
+            $str_symbol = appendPrefix($symbol_list);
         }
         //复数symbol查询
         else
@@ -18,6 +19,8 @@
             //构造查询String
             foreach($client_json->symbolArray as $symbol)
             {
+                //添加SHA:,SHE:前缀
+                $symbol = appendPrefix($symbol);
                 $s .= $symbol.","; 
             }
             

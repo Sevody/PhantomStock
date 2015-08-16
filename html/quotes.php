@@ -7,4 +7,5 @@
     {
         echo json_encode(quoteList($_GET["symbol_list"]));
     }
+    
 ?>
