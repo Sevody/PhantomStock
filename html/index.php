@@ -1,16 +1,13 @@
 <!--Home Page -->
 
 <?
-    //连接数据库
-    include('conn.php');
+    
     
     //检查是否已登陆
-    include('check_log.php');
+    include('check_logged.php');
     
     //通过信息源获取股票信息
     include('quotes_source.php');
-    
-    
     
     
     

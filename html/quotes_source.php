@@ -14,6 +14,8 @@
     http://www.google.com/finance/historical?q=CSCO&output=csv
     http://www.google.com/finance/info?infotype=infoquoteall&q=C,JPM,AIG
     http://www.google.com/finance/getprices?q=000001&x=SHA&i=86400&p=6M&f=d,c,v,o,h,l&df=cpct&auto=1&ts=1259212443409
+    https://www.google.com/finance/company_news?q=AAPL&gl=cn&output=rss
+    https://www.google.com.hk/finance?q=SHE%3A000002&gl=cn&&output=json
     
     for ticker related news:
     http://www.google.com/finance/company_news?q=AAPL&output=rss

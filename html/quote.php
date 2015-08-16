@@ -2,7 +2,7 @@
 
 
     
-    include('check_log.php');
+    include('check_logged.php');
     include('quotes_source.php');
     include('chart_source.php');
     

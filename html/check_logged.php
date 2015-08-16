@@ -2,6 +2,9 @@
     
     session_start();
     
+    //连接数据库
+    include('conn.php');
+    
     //flag for 是否已登录
     $logged = false;
  
