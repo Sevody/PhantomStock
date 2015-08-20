@@ -11,7 +11,7 @@
     
     
     
-    $stock_symbols = '{ "symbolArray":["FB", "AAPL","600018", "000725", "002068", "000002"] }';
+    $stock_symbols = '{ "symbolArray":["BIDU", "AAPL","600018", "000725", "002068", "000002"] }';
     $index_symbols = '{ "symbolArray":["000001","399001"] }';
     //获取股票列表的最新报价
     $stockList = quoteList($stock_symbols);
@@ -147,7 +147,7 @@
             }  
             */
             
-            var stock_symbols = '{ "symbolArray":["000001","399001","fb", "aapl","600018", "000725", "002068", "000002"] }';
+            var stock_symbols = '{ "symbolArray":["000001","399001","bidu", "aapl","600018", "000725", "002068", "000002"] }';
             //每5秒发送一次ajax请求,取回最新报价
             var int=setInterval(refreshQuotes, 5000);
             var xmlhttp;

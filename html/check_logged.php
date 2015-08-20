@@ -5,7 +5,7 @@
    
     //flag for 是否已登录
     $logged = false;
- 
+    
     //session登录
     if (isset($_SESSION["authenticated"]) && 
               $_SESSION["authenticated"] === true)

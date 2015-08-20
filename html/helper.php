@@ -1,7 +1,7 @@
 <?
 
     
-    //把M,B单位转换成Int volume单位是手用1,shares用2
+    //把M,B单位转换成Int volume单位是手用1,shares用2,3
     function transformUnit_toInt1($str_num)
     {
         $unit = substr($str_num, -1);
@@ -10,7 +10,7 @@
             case "M" : return substr($str_num, 0, strlen($str_num)-1)*10000;
                         
             case "B" : return substr($str_num, 0, strlen($str_num)-1)*10000000;
-                        
+
             default :  return $str_num;            
         }
     }
@@ -20,6 +20,18 @@
         switch ($unit)
         {
             case "M" : return substr($str_num, 0, strlen($str_num)-1)*1000000;
+                        
+            case "B" : return substr($str_num, 0, strlen($str_num)-1)*1000000000;
+                        
+            default :  return $str_num;            
+        }
+    }
+    function transformUnit_toInt3($str_num)
+    {
+        $unit = substr($str_num, -1);
+        switch ($unit)
+        {
+            case "M" : return substr($str_num, 0, strlen($str_num)-1)*10000000;
                         
             case "B" : return substr($str_num, 0, strlen($str_num)-1)*1000000000;
                         
@@ -57,7 +69,7 @@
     }
     
     //通过总手和流通股本计算换手率turnover
-    function getTurnover($str_volume, $str_shares)
+    function getTurnover($str_volume, $str_shares, $symbol)
     {   
         if($str_volume != null && $str_shares != null && $str_volume != "-")
         {
@@ -67,7 +79,25 @@
             $turn_over = number_format(($volume*100/$shares)*100, 2);
             return $turn_over."%";
         }
-        else return "-";
+        else
+        {
+            //美股
+            $data = file_get_contents("http://finance.yahoo.com/webservice/v1/symbols/{$symbol}/quote?format=json&view=detail");
+            
+            //decode JSON data
+            $json_quotes = json_decode(utf8_encode($data));
+            $volume = $json_quotes->list->resources[0]->resource->fields->volume;
+            if($volume != null && $str_shares != null && $volume != "-")
+            {
+                $volume = $volume/100;
+                $shares = transformUnit_toInt3($str_shares);
+                //换手率＝(成交总手数×100÷流通股本)*100%
+                $turn_over = number_format(($volume*100/$shares)*100, 2);
+                return $turn_over."%";
+            }
+            else return "-";
+        }
+        
     }
     
     //根据股票代码从数据库空获取股票名称symbol
@@ -195,5 +225,23 @@
         }
     }
     
+    function getVolume($volume, $symbol)
+    {
+        $reg = '/(\d)(\d{5})/';
+        $result = preg_match($reg, $symbol);
+        if($result !== 0)
+        {
+            return transformUnit_toChs($volume);
+        }
+        else
+        {
+            $data = file_get_contents("http://finance.yahoo.com/webservice/v1/symbols/{$symbol}/quote?format=json&view=detail");
+            
+            //decode JSON data
+            $json_quotes = json_decode(utf8_encode($data));
+            return getVolume_fromInt($json_quotes->list->resources[0]->resource->fields->volume);
+        }
+        
+    }
     
 ?>

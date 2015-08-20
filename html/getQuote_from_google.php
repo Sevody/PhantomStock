@@ -47,8 +47,8 @@
             $stockList[$i]["last_trade"] = $json_quotes[$i]->l;
             $stockList[$i]["chg"] = plusPlus($json_quotes[$i]->cp)."%";
             $stockList[$i]["change"] = $json_quotes[$i]->c;
-            $stockList[$i]["volume"] = transformUnit_toChs($json_quotes[$i]->vo);
-            $stockList[$i]["turnover"] = getTurnover($json_quotes[$i]->vo, $json_quotes[$i]->shares);
+            $stockList[$i]["volume"] = getVolume($json_quotes[$i]->vo, $stockList[$i]["symbol"]);
+            $stockList[$i]["turnover"] = getTurnover($json_quotes[$i]->vo, $json_quotes[$i]->shares, $json_quotes[$i]->t);
             $stockList[$i]["pe"] = $json_quotes[$i]->pe;
             $stockList[$i]["open"] = $json_quotes[$i]->op;
             $stockList[$i]["close"] = $json_quotes[$i]->pcls_fix;
