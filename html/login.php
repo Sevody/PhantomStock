@@ -8,39 +8,46 @@
     {
         if (!empty($_POST["username"]) && !empty($_POST["password"]))
         {
-            $sql = sprintf("SELECT uid, passwordhash FROM users WHERE user_name='%s' AND passwordhash='%s' limit 1",
-                            mysql_real_escape_string(strtolower($_POST["username"])),
-                            hash("SHA1",($_POST["password"])));
+            $username = strtolower($_POST["username"]);
+            $passwordhash = hash("SHA1",($_POST["password"]));
             
-            $userid = 0;  
-            $result = mysql_query($sql);
+            $check_statement = $db->prepare('SELECT uid, passwordhash FROM users
+                                             WHERE user_name=:username AND passwordhash=:passwordhash
+                                             limit 1');
             
-            if ($result)
+            $check_statement->execute(array(
+                                            ':username'=>$username,
+                                            ':passwordhash'=>$passwordhash
+                                            ));
+            $result = $check_statement->fetchAll();
+            
+            if($result && isset($result[0]['uid']))
             {
-                $row = mysql_fetch_row($result);
-                if (isset($row[0]) && isset($row[1]))
-                {
-                    //登录成功
-                    $_SESSION["authenticated"] = true;
-                    
-                    //设置cookies
-                    $userid = $row[0];
-                    $password = $row[1];
-                    $data = $userid."\t".hash("SHA1", $userid.$password);
-                    $sign = base64_encode($data);
-                    setcookie("identity", $sign, time() + (7 * 24 * 60 * 60));
-                    
-                    //重定向到主页
-                    $host = $_SERVER["HTTP_HOST"];
-                    $path = rtrim(dirname($_SERVER["PHP_SELF"]), "/\\");
-                    header("Location: https://$host$path/index.php");
-                    exit;
-                }
-                else
-                {
-                    echo "密码错误或用户不存在";
-                }
+                
+                //登录成功
+                $_SESSION["authenticated"] = true;
+                
+                //设置cookies
+                $userid = $result[0]['uid'];
+                $passwordhash = $result[0]['passwordhash'];
+                $data = $userid."\t".hash("SHA1", $userid.$passwordhash);
+                $sign = base64_encode($data);
+                setcookie("identity", $sign, time() + (7 * 24 * 60 * 60));
+                
+                //关闭连接
+                $db = null;
+                
+                //重定向到主页
+                $host = $_SERVER["HTTP_HOST"];
+                $path = rtrim(dirname($_SERVER["PHP_SELF"]), "/\\");
+                header("Location: https://$host$path/index.php");
+                exit;
             }
+            else
+            {
+                echo "密码错误或用户不存在";
+            }
+            
             
         }
         else

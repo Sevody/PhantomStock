@@ -2,7 +2,6 @@
 
     session_start();
 
-    include('conn.php');
         
     if (isset($_POST["username"]) && isset($_POST["password"]) && 
         isset($_POST["confirm_password"]) && isset($_POST["email"]))
@@ -25,52 +24,68 @@
         }
         else
         {
-           
-            //检查用户名和邮箱是否被注册
-            $sql = sprintf("SELECT 1 FROM users WHERE user_name='%s'", 
-                            strtolower(mysql_real_escape_string($_POST["user_name"])));
+            //username允许存储大写,但不区分大小写
+            $username = $_POST["username"];
+            $password = $_POST["password"];
+            //email全部小写
+            $email = strtolower($_POST["email"]);
             
-            $result = mysql_query($sql);
-            if ($result ===false)
-                die("Could not query database");
+            include('conn.php');
+            //检查用户名是否已被注册
+            $check_username = $db->prepare('SELECT 1 FROM users 
+                                            WHERE LOWER(user_name)=:username limit 1');
+            $check_username->bindValue(':username', strtolower($username), PDO::PARAM_STR);
+            $check_username->execute();
             
-            if (mysql_num_rows($result) != 0)
+            $result = $check_username->fetchAll();
+            
+            if($result)
             {
+                header("Content-type:text/html;charset=utf-8");
                 echo "用户名已存在";
                 exit;
             }
-          
-            $sql = sprintf("SELECT 1 FROM users WHERE email='%s'", 
-                            strtolower(mysql_real_escape_string($_POST["email"])));  
-                            
-            $result = mysql_query($sql);
-            if ($result ===false)
-               die("Could not query database");
-               
-            if (mysql_num_rows($result) != 0)
+            
+            //检查邮箱是否已被注册            
+            $check_email = $db->prepare('SELECT 1 FROM users 
+                                         WHERE email=:email limit 1');
+            $check_email->bindValue(':email', $email, PDO::PARAM_STR);
+            $check_email->execute();
+            
+            $result = $check_email->fetchAll();
+            
+            if($result)
             {
+                header("Content-type:text/html;charset=utf-8");
                 echo "邮箱已被注册";
                 exit;
             }
             
+            
             //把注册信息写入数据库
-            $sql = sprintf("INSERT INTO users (user_name, passwordhash, email) VALUES ('%s', '%s', '%s')",
-                            mysql_real_escape_string(strtolower($_POST["username"])),
-                            hash("SHA1",$_POST["password"]),
-                            mysql_real_escape_string(strtolower($_POST["email"])));
-           
-            $result = mysql_query($sql);
-            //print_r($result);
-            if ($result !== false)
+            $insert_user = $db->prepare('INSERT INTO users (user_name, passwordhash, email) 
+                                         VALUES (:username, :passwordhash, :email)');
+            $insert_user->execute(array(
+                                        ':username'=>$username,
+                                        ':passwordhash'=>hash("SHA1", $password),
+                                        ':email'=>$email
+                                        ));
+            $lastId = $db->lastInsertId();
+            
+            //关闭连接
+            $db = null;
+            
+            if($lastId)
             {
+                
                 //注册成功
                 $_SESSION["authenticated"] = true;
                     
                 //设置cookies
-                $userid = mysql_insert_id();
+                $userid = $lastId;
                 $password = hash("SHA1",$_POST["password"]);
                 $data = $userid."\t".hash("SHA1", $userid.$password);
-                $sign = base64_encode($$data);
+                $sign = base64_encode($data);
                 setcookie("identity", $sign, time() + 7 * 24 * 60 * 60);
                 
                 //重定向到主页
@@ -81,7 +96,9 @@
             }
             else
             {
-                echo "添加用户失败";
+                header("Content-type:text/html;charset=utf-8");
+                echo "注册失败";
+                exit;
             }
         }
     }

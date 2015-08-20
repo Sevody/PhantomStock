@@ -1,8 +1,6 @@
 <?
 
-    //连接数据库
-    include('conn.php');
-
+    
     //把M,B单位转换成Int volume单位是手用1,shares用2
     function transformUnit_toInt1($str_num)
     {
@@ -75,25 +73,30 @@
     //根据股票代码从数据库空获取股票名称symbol
     function getStockName($stock_symbol, $default)
     {
+        
         //中国A股
         if(strlen($stock_symbol) === 6 )
         {
             $reg =  '/(\d)(\d{5})/';
             if(preg_match($reg, $stock_symbol))
             {
-                $sql = sprintf("SELECT name from stocks WHERE symbol='%s' limit 1",
-                                mysql_real_escape_string($stock_symbol));
-                //解决中文乱码
-                mysql_query("SET NAMES 'utf8'");
-                $result = mysql_query($sql);
-               
-                if ($result)
+                //连接数据库
+                include('conn.php');
+
+                $passwordhash_statement = $db->prepare('SELECT name FROM stocks 
+                                                        WHERE symbol=:symbol limit 1');
+                $passwordhash_statement->bindValue(':symbol', $stock_symbol, PDO::PARAM_STR);
+                $passwordhash_statement->execute();
+                $result = $passwordhash_statement->fetchAll();
+                
+                //关闭连接
+                $db = null;
+                
+                if ($result && isset($result[0]['name'])) 
                 {
-                    $row = mysql_fetch_row($result);
-                    if (isset($row[0]))
-                    {   
-                        return $row[0];
-                    }
+                    
+                    return $result[0]['name'];
+                    
                 }
             }
         }
